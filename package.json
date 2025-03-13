@@ -9,6 +9,7 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^12.2.4",
     "@astrojs/react": "^4.2.1",
     "@blocknote/core": "^0.25.1",
     "@blocknote/mantine": "^0.25.1",
