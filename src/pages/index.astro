@@ -1,11 +1,55 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import Title from '@/components/editor/Title.astro'
+import Layout from '../layouts/Layout.astro'
+import Link from '@/components/Link.astro'
+import List from '@/components/editor/List.astro'
+import { getSeccionByMateriaLink, nameToLink } from '@/lib/utils'
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const materiasDeHoy = [
+	{
+		nombre: 'Ingeniería de Software a',
+		link: 'ingenieria_de_software',
+		orden: 2
+	},
+	{
+		nombre: 'Ingeniería de Software b',
+		link: 'ingenieria_de_software',
+		orden: 1
+	}
+]
+
+const mapped = materiasDeHoy.map((m,idx) => ({ idx, orden: m.orden }))
+const sorted = mapped.sort((a,b) => a.orden > b.orden ? 1 : a.orden < b.orden ? -1 : 0)
+const materiasDeHoySorted = sorted.map(e => materiasDeHoy[e.idx])
+
+const ultimaNota = { nombre: 'Canción', link: '', materia: 'Inglés' }
+ultimaNota.link = encodeURIComponent(ultimaNota.nombre)
+const linkLatestNote = ''
 ---
 
-<Layout>
-	<Welcome />
+<Layout title='Inicio' className='gap-8'>
+	<section>
+		<Title>Última nota creada</Title>
+		<Link href={linkLatestNote}>
+			{ultimaNota.nombre}
+		</Link>
+	</section>
+	<section>
+		<Title>Materias de hoy</Title>
+		<List mark='dot'>
+			{
+				materiasDeHoySorted.map(materia => {
+					const link = `/${nameToLink(getSeccionByMateriaLink(materia.link) ?? '')}/${materia.link}`
+					return (
+						<li>
+							<Link href={link}>{materia.nombre}</Link>
+						</li>
+					)
+				})
+			}
+		</List>
+	</section>
+	<Title>
+		<Link href=`/editor?materiaName=${encodeURI('Programación Full Stack')}&notaName=${encodeURI('Prueba del editor')}`>Editor</Link>
+	</Title>
 </Layout>

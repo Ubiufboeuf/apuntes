@@ -1,0 +1,40 @@
+---
+import { getSeccionByMateriaLink, materiasPorSeccion, nameToLink } from '@/lib/utils'
+
+const { pathname } = Astro.url
+---
+
+<aside class='w-sidebar h-full bg-secondary absolute md:left-0 -left-[280px] [transition:left_250ms_ease] border-solid border-b-[1px] border-r-[1px] border-border-color'>
+  <div class='flex items-center h-header w-full border-b-[1px] border-solid border-b-border-color'>
+    <a href='/' class='p-4 h-fit max-h-full w-fit max-w-full text-xl font-bold text-primary-content'>
+      Mis Apuntes
+    </a>
+  </div>
+  <nav class='h-[calc(100%-60px)] w-full'>
+    <div class='h-full w-full overflow-y-auto overflow-x-hidden flex flex-col items-center justify-start gap-6 p-4 py-8'>
+      {
+        materiasPorSeccion.map(seccion => (
+          <div class='h-fit w-full flex flex-col gap-2'>
+            <a href={`/${nameToLink(seccion.title)}`}>
+              <h3 class='uppercase w-full text-secondary-content text-base font-semibold '>{seccion.title}</h3>
+            </a>
+            <div class='w-full h-fit flex flex-col items-center justify-center gap-1'>
+              {
+                seccion.materias.map(materia => (
+                  <a
+                    href={`/${nameToLink(getSeccionByMateriaLink(materia.link) ?? '')}/${materia.link}`}
+                    class={`${pathname.includes(materia.link) ? 'active' : ''} h-10 px-4 w-full flex items-center justify-start text-secondary-content hover:not-[.active]:bg-tertiary rounded-lg transition-colors duration-200 hover:not-[.active]:text-primary-content [&.active]:bg-accent-primary [&.active]:text-primary-content [&.active]:font-semibold`}
+                  >
+                    <span class='w-fit h-fit max-w-full line-clamp-1'>
+                      {materia.nombre}
+                    </span>
+                  </a>
+                ))
+              }
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </nav>
+</aside>

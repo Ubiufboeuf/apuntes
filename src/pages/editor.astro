@@ -1,0 +1,35 @@
+---
+import Layout from '@/layouts/Layout.astro'
+import { Editor as ClientEditor } from '@/components/Editor'
+import { getNotaContent } from '@/db/client'
+import { CrearNota } from '@/components/CrearNota'
+
+export const prerender = false
+
+const { url } = Astro
+const materiaName = url.searchParams.get('materiaName') ?? ''
+const notaName = url.searchParams.get('notaName') ?? ''
+
+if (url.pathname === '/favicon.ico') return 
+
+const initialContent = await getNotaContent({ notaName, materiaName })
+const existNota = url.searchParams.get('existNota')
+
+Astro.url.searchParams.set('title', `Crea una nueva nota para ${materiaName}`)
+if (initialContent > 0 || existNota) Astro.url.searchParams.delete('title')
+---
+
+<Layout title={(initialContent.length === 0 || !materiaName || !notaName) ? `Nueva nota - ${materiaName}` : 'Editor'} className='min-h-fit pb-32'>
+  {
+    (initialContent.length === 0 || !materiaName || !notaName) ? (
+      <CrearNota _materiaName={materiaName ?? ''} _notaName={notaName ?? ''} client:load />
+    ) : (
+      <ClientEditor
+        initialContent={initialContent}
+        materiaName={materiaName}
+        notaName={notaName}
+        client:only='react'
+      />
+    ) 
+  }
+</Layout>

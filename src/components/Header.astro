@@ -1,0 +1,45 @@
+---
+import { getMateriaByLink, getSeccionNameByLink } from '@/lib/utils'
+import { IconMenu, IconArrowRight } from './Icons'
+import { findNotaByMateriaLinkAndNotaLink } from '@/mocks/notas'
+import Crumb from '@/components/Crumb.astro'
+
+export const prerender = false
+const { url } = Astro
+const { pathname } = url
+const path = (pathname !== '/') ? pathname.split('/').slice(1) : ['']
+let crumb = ''
+const reservedPaths = [
+  { path: '404', msg: 'No se encontró la página buscada' },
+  { path: '400', msg: 'Mala formulación de la url' },
+  { path: 'editor', msg: url.searchParams.get('title') ?? 'Editor' },
+  { path: 'manage', msg: 'Administra las notas a tu gusto' },
+]
+---
+<header class='h-header bg-secondary w-full flex border-b-border-color border-b-[1px] border-solid p-1.5 px-4'>
+  <div class='w-full flex-1 flex items-center justify-start text-secondary-content text-sm px-2'>
+    {
+      path.map(async (part, idx) => {
+        if (part === '') return
+        let nombre
+        if (idx === 0) nombre = getSeccionNameByLink(part) || (reservedPaths.find(p => p.path.includes(path[0]))?.msg || 'Sección')
+        if (idx === 1) nombre = getMateriaByLink(part) || 'Materia'
+        if (idx === 2) nombre = decodeURIComponent(part) || 'Nota sin nombre'
+        crumb += `/${path[idx]}`
+        return idx === 0 ? (
+            <Crumb link={reservedPaths.some(p => p.path.includes(path[0])) ? '' : crumb}>{nombre}</Crumb>
+          ) : (
+            <div class='size-3.5 flex items-center justify-center'>
+              <IconArrowRight />
+            </div>
+            <Crumb link={crumb}>{nombre}</Crumb>
+          )
+      })
+    }
+  </div>
+  <label id='toggle-sidebar' for='checkbox-toggle-sidebar' class='h-full aspect-square flex items-center justify-center hover:bg-tertiary rounded-lg cursor-pointer md:hidden'>
+    <div class='size-6 flex items-center justify-center'>
+      <IconMenu />
+    </div>
+  </label>
+</header>

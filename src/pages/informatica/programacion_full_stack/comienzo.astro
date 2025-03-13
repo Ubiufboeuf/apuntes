@@ -1,0 +1,61 @@
+---
+import Layout from '@/layouts/Layout.astro'
+import Title from '@/components/editor/Title.astro'
+import SubTitle from '@/components/editor/SubTitle.astro'
+import ElementTitle from '@/components/editor/ElementTitle.astro'
+import Sqr from '@/components/editor/Sqr.astro'
+import Big from '@/components/editor/Big.astro'
+import TD from '@/components/editor/TD.astro'
+import Note from '@/components/editor/Note.astro'
+import Footer from '@/components/Footer.astro'
+---
+
+<Layout title='Comienzo' className='gap-8'>
+  <section>
+    <Title>
+      Programación Full Stack
+    </Title>
+    <SubTitle>
+      Profesor: Mariano Bastarreix <br>
+      Días: Martes 3 horas y Jueves 2 (<a href='https://horarios-public.pages.dev' class='text-accent-secondary hover:text-accent-primary' target='_blank'>Horarios</a>)
+    </SubTitle>
+  </section>
+  <section>
+    <div class='w-fit flex justify-between items-center gap-12'>
+      <div>
+        <ElementTitle>
+          Frontend
+        </ElementTitle>
+        <Sqr to='Navegador'>
+          <ul>
+            <li>&rightarrow; HTML</li>
+            <li>&rightarrow; CSS</li>
+            <li>&rightarrow; JS</li>
+          </ul>
+        </Sqr>
+      </div>
+      <Big>&rightleftarrows;</Big>
+      <div>
+        <ElementTitle>
+          Backend
+        </ElementTitle>
+        <Sqr>
+          <u>PHP</u>
+        </Sqr>
+      </div>
+      <Note type='info'>
+        asñdlkfj
+      </Note>
+    </div>
+  </section>
+
+  <section>
+    <TD>
+      <p>Crea un nav con estos botones o enlaces: </p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Biblioteca, usuarios, libros y prestamos</p>
+      <p>En la tabla en base al nav debe mostrarse la información correspondiente de la BD.</p>
+      <p>La tabla puede estar en la misma página y cambiar de datos o cambiar de página por tabla.</p>
+    </TD>
+  </section>
+  <Footer slot='footer' />
+</Layout>

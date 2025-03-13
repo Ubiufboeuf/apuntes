@@ -1,0 +1,16 @@
+---
+import Title2 from './Title2.astro'
+
+interface Props {
+  className?: string
+}
+
+const { className = '' } = Astro.props
+---
+
+<div class=`h-fit w-full p-6 flex flex-col rounded-lg gap-2 py-7 pb-10 bg-tertiary ${className}`>
+  <Title2>Tarea Domiciliaria</Title2>
+  <div class='text-primary-content gap-2 flex flex-col p-2 px-3'>
+    <slot />
+  </div>
+</div>

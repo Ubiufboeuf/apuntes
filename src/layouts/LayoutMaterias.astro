@@ -1,0 +1,68 @@
+---
+import Title from '@/components/editor/Title.astro'
+import Title2 from '@/components/editor/Title2.astro'
+import Layout from '@/layouts/Layout.astro'
+import List from '@/components/editor/List.astro'
+import { parseStringToDate, getMateriaByPath, materias, getSeccionByMateriaLink, nameToLink, secciones } from '@/lib/utils'
+import Footer from '@/components/Footer.astro'
+import { getNotasFromDB } from '@/db/client'
+
+const { pathname } = Astro.url
+const { nombre: materia } = getMateriaByPath(pathname)
+let path = pathname.startsWith('/')
+  ? pathname.substring(1, pathname.length).split('/')
+  : pathname.split('/')
+
+// const notas = await getNotasByMateriaLink(path[1])
+const notas = await getNotasFromDB(path[1])
+
+const materiaIdx = materias.findIndex(m => m.nombre === materia)
+const nextMateria = materias[materiaIdx+1]
+const prevMateria = materias[materiaIdx-1]
+const nextSeccionLink = nameToLink(getSeccionByMateriaLink(nextMateria?.link) ?? '')
+const prevSeccionLink = nameToLink(getSeccionByMateriaLink(prevMateria?.link) ?? '')
+
+const prev = (prevMateria?.nombre && prevMateria?.link) ? {
+  name: prevMateria?.nombre,
+  link: `/${prevSeccionLink}/${prevMateria?.link}`
+} : {
+  name: secciones[0].nombre,
+  link: `/${secciones[0].link}`
+}
+
+const next = (nextMateria?.nombre && nextMateria?.link) ? {
+  name: nextMateria?.nombre,
+  link: `/${nextSeccionLink}/${nextMateria?.link}`
+} : {
+  name: secciones.at(-1)?.nombre,
+  link: `/${secciones.at(-1)?.link}`
+}
+---
+
+<Layout title={materia}>
+  <Title>{materia}</Title>
+  <Title2 className='mt-4'>Notas</Title2>
+  {
+    (notas && notas?.length > 0) ? (
+      <List mark='dot'>
+      {
+        notas.map(nota => {
+          return (
+            <li>
+              <a
+                href={`/${nota.id}`}
+                class='text-accent-secondary hover:text-accent-primary'
+              >
+                {nota.notaName || `Nota sin nombre${nota?.lastModified && parseStringToDate(nota?.lastModified?.toString()) ? ` - ${parseStringToDate(nota?.lastModified.toString())}` : ''}`}
+              </a>
+            </li>
+          )
+        })
+      }
+    </List>
+    ) : (
+      <span class='text-secondary-content'>No hay notas</span>
+    )
+  }
+  <Footer slot='footer' prev={prev} next={next} />
+</Layout>

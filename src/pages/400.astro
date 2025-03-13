@@ -1,0 +1,16 @@
+---
+import SubTitle from '@/components/editor/SubTitle.astro'
+import Title from '@/components/editor/Title.astro'
+import Layout from '@/layouts/Layout.astro'
+
+export const prerender = false
+const { url } = Astro
+const msg = url.searchParams.get('msg') || 'No se recibió ningún mensaje'
+const href = url.searchParams.get('url') || 'No se recibió ninguna url'
+---
+
+<Layout title='400 - Bad request'>
+  <Title>Error 400</Title>
+  <SubTitle>En la url: {`${href}`}</SubTitle>
+  <p class='text-primary-content'>Mensaje: {msg}</p>
+</Layout>

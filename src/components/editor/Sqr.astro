@@ -1,0 +1,28 @@
+---
+interface Props {
+  className?: string
+  to?: string
+  border?: string | number
+  gap?: string | number
+}
+
+let { className = '', to, border, gap } = Astro.props
+border = (border && typeof border === 'number') ? border.toString() : border
+gap = (gap && typeof gap === 'number') ? gap.toString() : gap
+
+const style = `
+  ${border ? `border-width: ${border}` : ''};
+  ${gap ? `justify-content: ${gap}rem` : ''}
+`
+---
+<div
+  class=`border-4 border-border-color flex w-fit items-center min-h-32 min-w-32 justify-center px-4 rounded ${className}`
+  style={style}
+>
+  <slot />
+  {
+    to && (
+      <span>-&gt; {to}</span>
+    )
+  }
+</div>

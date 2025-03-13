@@ -1,0 +1,38 @@
+---
+import Layout from '@/layouts/Layout.astro'
+import LayoutMaterias from '@/layouts/LayoutMaterias.astro'
+import LayoutNotas from '@/layouts/LayoutNotas.astro'
+import LayoutSeccionDeMaterias from '@/layouts/LayoutSeccionDeMaterias.astro'
+import { materiasPorSeccion, nameToLink, getMateriaByLink } from '@/lib/utils'
+import { findNotaByMateriaLinkAndNotaLink } from '@/mocks/notas'
+
+export const prerender = false
+
+let { slug } = Astro.params
+
+if (!slug) return Astro.redirect('/')
+let type, seccion, materia, nota
+
+const link = slug.split('/')
+
+if (link.length === 1) {
+  type = 'seccion'
+  seccion = materiasPorSeccion.find(m => nameToLink(m.title) === slug)
+} else if (link.length === 2) {
+  type = 'materia'
+  materia = getMateriaByLink(link[1])
+} else if (link.length === 3) {
+  type = 'nota'
+  nota = findNotaByMateriaLinkAndNotaLink({ materiaLink: link[1], notaLink: link[2] })
+}
+---
+
+{
+  type === 'seccion' && seccion
+    ? <LayoutSeccionDeMaterias />
+    : type === 'materia' && materia
+      ? <LayoutMaterias />
+      : type === 'nota'
+        ? <LayoutNotas />
+        : <script>window.location.assign('/404')</script>
+}

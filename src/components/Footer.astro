@@ -1,0 +1,40 @@
+---
+import type { JSX } from 'react'
+import { IconArrowRight, IconArrowLeft } from './Icons'
+
+interface Props {
+  lastUpdate?: string
+  prev?: { name?: string, link?: string, icon?: () => JSX.Element }
+  next?: { name?: string, link?: string, icon?: () => JSX.Element }
+}
+
+const { lastUpdate, next, prev } = Astro.props
+const PrevIcon = prev?.icon
+const NextIcon = next?.icon
+---
+
+<footer class='w-full h-fit min-h-fit max-h-fit border-t-[1px] border-border-color py-4 px-2'>
+  <div class='flex h-fit justify-between items-center w-full py-2'>
+    <a href={prev?.link} class='w-fit h-fit px-4 py-2 justify-self-start flex items-center justify-start gap-2 text-secondary-content hover:text-accent-primary hover:underline'>
+      <div class='size-6 flex items-center justify-center'>
+        { PrevIcon ? <PrevIcon /> : <IconArrowLeft /> }
+      </div>
+      <span>{prev?.name}</span>
+    </a>
+    <a href={next?.link} class='w-fit h-fit px-4 py-2 justify-self-end flex items-center justify-end gap-2 text-secondary-content hover:text-accent-primary hover:underline'>
+      <span>{next?.name}</span>
+      <div class='size-6 flex items-center justify-center'>
+        { NextIcon ? <NextIcon /> : <IconArrowRight /> }
+      </div>
+    </a>
+  </div>
+  <div class='flex h-fit justify-center items-center w-full'>
+    {
+      lastUpdate && (
+        <a class='[grid-row:2] [grid-column:1/-1] text-muted-content text-sm'>
+          Última actualización: <time>{lastUpdate}</time>
+        </a>
+      )
+    }
+  </div>
+</footer>

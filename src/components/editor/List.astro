@@ -1,0 +1,21 @@
+---
+interface Props {
+  className?: string
+  mark?: 'dot' | 'enum'
+}
+
+let { className = '', mark = 'enum' } = Astro.props
+const classes = '[&>*]:list-item list-inside pl-4'
+---
+
+{
+  mark === 'dot' ? (
+    <ul class={`${className} ${classes} [list-style-type:disc]`}>
+      <slot />
+    </ul>
+  ) : (
+    <ol class={`${className} ${classes} [list-style-type:decimal]`}>
+      <slot />
+    </ol>
+  )
+}
