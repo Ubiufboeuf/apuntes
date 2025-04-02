@@ -41,6 +41,8 @@
   --width-sidebar: 280px;
   --height-header: 60px;
   --width-content: 900px;
+
+  --breakpoint-mini: 358px;
 }
 
 /* 

@@ -1,17 +1,24 @@
 ---
 import { getSeccionByMateriaLink, materiasPorSeccion, nameToLink } from '@/lib/utils'
+import { IconMenu } from './Icons'
 
 const { pathname } = Astro.url
 ---
 
-<aside class='w-sidebar h-full bg-secondary absolute md:left-0 -left-[280px] [transition:left_250ms_ease] border-solid border-b-[1px] border-r-[1px] border-border-color'>
-  <div class='flex items-center h-header w-full border-b-[1px] border-solid border-b-border-color'>
+<label id='closeAside' for='checkbox-toggle-sidebar' class='w-full h-full absolute z-[998] lg:hidden -left-[100%] bg-[#0005]'></label>
+<aside id='aside' class='w-sidebar h-full bg-secondary absolute lg:left-0 z-[999] -left-[280px] [transition:left_250ms_ease] border-solid border-b-[1px] border-r-[1px] border-border-color'>
+  <div class='flex items-center justify-between h-header w-full border-b-[1px] border-solid border-b-border-color pr-2'>
     <a href='/' class='p-4 h-fit max-h-full w-fit max-w-full text-xl font-bold text-primary-content'>
       Mis Apuntes
     </a>
+    <label id='toggle-sidebar' for='checkbox-toggle-sidebar' class='mini:hidden h-full max-w-[60px] flex-1 aspect-square flex items-center justify-center hover:bg-tertiary rounded-lg cursor-pointer lg:hidden'>
+      <div class='size-6 flex items-center justify-center text-primary-content'>
+        <IconMenu />
+      </div>
+    </label>
   </div>
   <nav class='h-[calc(100%-60px)] w-full'>
-    <div class='h-full w-full overflow-y-auto overflow-x-hidden flex flex-col items-center justify-start gap-6 p-4 py-8'>
+    <div class='h-full w-full overflow-y-auto overflow-x-hidden flex flex-col items-center justify-start gap-6 p-4 py-8 [scrollbar-width:thin]'>
       {
         materiasPorSeccion.map(seccion => (
           <div class='h-fit w-full flex flex-col gap-2'>
@@ -22,7 +29,9 @@ const { pathname } = Astro.url
               {
                 seccion.materias.map(materia => (
                   <a
-                    href={`/${nameToLink(getSeccionByMateriaLink(materia.link) ?? '')}/${materia.link}`}
+                    href={materia.link === 'horarios' ? 'https://horarios-public.pages.dev' : `/${nameToLink(getSeccionByMateriaLink(materia.link) ?? '')}/${materia.link}`}
+                    target={materia.link === 'horarios' ? '_blank' : '_self'}
+                    rel={materia.link === 'horarios' ? 'noopener noreferrer' : ''}
                     class={`${pathname.includes(materia.link) ? 'active' : ''} h-10 px-4 w-full flex items-center justify-start text-secondary-content hover:not-[.active]:bg-tertiary rounded-lg transition-colors duration-200 hover:not-[.active]:text-primary-content [&.active]:bg-accent-primary [&.active]:text-primary-content [&.active]:font-semibold`}
                   >
                     <span class='w-fit h-fit max-w-full line-clamp-1'>

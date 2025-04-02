@@ -20,12 +20,12 @@ let { title, className = '' } = Astro.props
 		<title>{title ? `${title} | Notas` : 'Notas'}</title>
 	</head>
 	<body class='relative flex has-[#toggle-sidebar:has(:checked)>main]:bg-red-800'>
-    <input id='checkbox-toggle-sidebar' type='checkbox' hidden class='[&:checked~aside]:left-0' />
+    <input id='checkbox-toggle-sidebar' type='checkbox' hidden class='[&:checked~#aside]:left-0 [&:checked~#closeAside]:left-0' />
 		<Aside />
-		<main class='flex flex-col h-full w-full md:pl-[280px] [transition:padding-left_250ms_ease]'>
+		<main class='flex flex-col h-full w-full lg:pl-[280px] [transition:padding-left_250ms_ease]'>
 			<Header />
 			<section class='h-[calc(100%-60px)] w-full flex flex-col justify-between items-center overflow-auto'>
-				<div class={`${className} h-full w-full max-w-[900px] p-8 flex flex-col`}>
+				<div class={`${className} h-full w-full max-w-[900px] [scrollbar-width:thin] md:[scrollbar-width:auto] p-8 flex flex-col min-h-fit`}>
 					<slot />
 				</div>
 				<slot name='footer' />

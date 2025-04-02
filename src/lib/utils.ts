@@ -33,6 +33,13 @@ export const materiasPorSeccion: MateriasPorSeccion[] = [
       { nombre: 'Tutoría Proyecto UTULAB', link: 'tutoria_proyecto_utulab' },
       { nombre: 'Emprendurismo y Gestión', link: 'emprendurismo_y_gestion' }
     ]
+  },
+  {
+    title: 'Extra',
+    materias: [
+      { nombre: 'Pendiente', link: 'pendiente' },
+      { nombre: 'Horarios', link: 'horarios' }
+    ]
   }
 ]
 
@@ -48,7 +55,9 @@ export const materias: Materia[] = [
   { nombre: 'Administración Sistemas Operativos', link: 'administracion_sistemas_operativos' },
   { nombre: 'Inteligencia Artificial', link: 'inteligencia_artificial' },
   { nombre: 'Tutoría Proyecto UTULAB', link: 'tutoria_proyecto_utulab' },
-  { nombre: 'Emprendurismo y Gestión', link: 'emprendurismo_y_gestion' }
+  { nombre: 'Emprendurismo y Gestión', link: 'emprendurismo_y_gestion' },
+  { nombre: 'Pendiente', link: 'pendiente' },
+  { nombre: 'Horarios', link: 'horarios' }
 ]
 
 export function linkToName (link: string) {
@@ -67,6 +76,7 @@ export function getSeccionNameByLink (link: string) {
   if (link === 'humanidades_y_ciencias_sociales') return 'Humanidades y Ciencias Sociales'
   if (link === 'informatica') return 'Informática'
   if (link === 'proyectos_y_negocios') return 'Proyectos y Negocios'
+  if (link === 'extra') return 'Extra'
 }
 
 export function getMateriaByLink (link: string) {
@@ -82,7 +92,9 @@ export function getMateriaByLink (link: string) {
     'matematica_cts': 'Matemática CTS',
     'programacion_full_stack': 'Programación Full Stack',
     'administracion_sistemas_operativos': 'Administración Sistemas Operativos',
-    'inteligencia_artificial': 'Inteligencia Artificial'
+    'inteligencia_artificial': 'Inteligencia Artificial',
+    'pendiente': 'Pendiente',
+    'horarios': 'Horarios'
   }
 
   if (materias[link]) return materias[link]
@@ -113,7 +125,9 @@ export function getSeccionByMateriaLink(link: string) {
     'administracion_sistemas_operativos': 'Informática',
     'inteligencia_artificial': 'Informática',
     'tutoria_proyecto_utulab': 'Proyectos y Negocios',
-    'emprendurismo_y_gestion': 'Proyectos y Negocios'
+    'emprendurismo_y_gestion': 'Proyectos y Negocios',
+    'pendiente': 'Extra',
+    'horarios': 'Extra'
   }
 
   if (secciones[link]) return secciones[link]
@@ -134,12 +148,14 @@ export function parseStringToDate(str: string | undefined = '') {
     'noviembre',
     'diciembre'
   ]
+  let res = ''
   try {
-    const now = Temporal.Now.zonedDateTime(str)
-    return `${now.day} de ${months[now.month - 1]}, ${now.year}`
+    const datetime = Temporal.ZonedDateTime.from(`${str}[America/Montevideo]`)
+    res = `${datetime.day} de ${months[datetime.month - 1]}, ${datetime.year}`
   } catch {
-    return ''
+    console.error('Error parseando fecha')
   }
+  return res
 }
 
 export function getMateriaByPath (path: string) {
@@ -152,7 +168,8 @@ export const secciones = [
   { nombre: 'Matemáticas', link: 'matematicas' },
   { nombre: 'Humanidades y Ciencias Sociales', link: 'humanidades_y_ciencias_sociales' },
   { nombre: 'Informática', link: 'informatica' },
-  { nombre: 'Proyectos y Negocios', link: 'proyectos_y_negocios' }
+  { nombre: 'Proyectos y Negocios', link: 'proyectos_y_negocios' },
+  { nombre: 'Extra', link: 'extra' }
 ]
 
 export function getPathByPathname(pathname: string) {

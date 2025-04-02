@@ -15,14 +15,14 @@ const NextIcon = next?.icon
 
 <footer class='w-full h-fit min-h-fit max-h-fit border-t-[1px] border-border-color py-4 px-2'>
   <div class='flex h-fit justify-between items-center w-full py-2'>
-    <a href={prev?.link} class='w-fit h-fit px-4 py-2 justify-self-start flex items-center justify-start gap-2 text-secondary-content hover:text-accent-primary hover:underline'>
+    <a href={prev?.link} title={prev?.name} class='w-fit h-fit px-4 py-2 justify-self-start flex items-center justify-start gap-2 text-secondary-content hover:text-accent-primary hover:underline'>
       <div class='size-6 flex items-center justify-center'>
         { PrevIcon ? <PrevIcon /> : <IconArrowLeft /> }
       </div>
-      <span>{prev?.name}</span>
+      <span class='overflow-ellipsis max-h-10 md:max-h-16 not-md:line-clamp-2 md:overflow-hidden text-xs mini:text-sm w-fit max-w-fit md:text-base'>{prev?.name}</span>
     </a>
-    <a href={next?.link} class='w-fit h-fit px-4 py-2 justify-self-end flex items-center justify-end gap-2 text-secondary-content hover:text-accent-primary hover:underline'>
-      <span>{next?.name}</span>
+    <a href={next?.link} title={next?.name} class='w-fit h-fit px-4 py-2 justify-self-end flex items-center justify-end gap-2 text-secondary-content hover:text-accent-primary hover:underline'>
+      <span class='overflow-ellipsis max-h-10 md:max-h-16 not-md:line-clamp-2 md:overflow-hidden text-xs mini:text-sm w-fit max-w-fit md:text-base text-right'>{next?.name}</span>
       <div class='size-6 flex items-center justify-center'>
         { NextIcon ? <NextIcon /> : <IconArrowRight /> }
       </div>
@@ -31,8 +31,9 @@ const NextIcon = next?.icon
   <div class='flex h-fit justify-center items-center w-full'>
     {
       lastUpdate && (
-        <a class='[grid-row:2] [grid-column:1/-1] text-muted-content text-sm'>
-          Última actualización: <time>{lastUpdate}</time>
+        <a class='[grid-row:2] [grid-column:1/-1] text-muted-content md:text-sm text-xs'>
+          <span class='hidden mini:inline'>Última actualización:</span>
+          <time>{lastUpdate}</time>
         </a>
       )
     }

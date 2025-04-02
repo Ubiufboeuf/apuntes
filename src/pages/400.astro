@@ -5,8 +5,8 @@ import Layout from '@/layouts/Layout.astro'
 
 export const prerender = false
 const { url } = Astro
-const msg = url.searchParams.get('msg') || 'No se recibió ningún mensaje'
-const href = url.searchParams.get('url') || 'No se recibió ninguna url'
+const msg = decodeURIComponent(url.searchParams.get('msg') || '') || 'No se recibió ningún mensaje'
+const href = decodeURIComponent(url.searchParams.get('url') || '') || 'No se recibió ninguna url'
 ---
 
 <Layout title='400 - Bad request'>

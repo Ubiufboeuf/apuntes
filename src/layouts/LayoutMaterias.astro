@@ -5,7 +5,8 @@ import Layout from '@/layouts/Layout.astro'
 import List from '@/components/editor/List.astro'
 import { parseStringToDate, getMateriaByPath, materias, getSeccionByMateriaLink, nameToLink, secciones } from '@/lib/utils'
 import Footer from '@/components/Footer.astro'
-import { getNotasFromDB } from '@/db/client'
+import { getNotasFromDBByMateriaLink } from '@/db/client'
+import { IconNote, IconDelete, IconRename, IconReplace } from '@/components/Icons'
 
 const { pathname } = Astro.url
 const { nombre: materia } = getMateriaByPath(pathname)
@@ -13,8 +14,12 @@ let path = pathname.startsWith('/')
   ? pathname.substring(1, pathname.length).split('/')
   : pathname.split('/')
 
-// const notas = await getNotasByMateriaLink(path[1])
-const notas = await getNotasFromDB(path[1])
+let notas
+try {
+  notas = await getNotasFromDBByMateriaLink(path[1])
+} catch {
+  console.error('No hay notas')
+}
 
 const materiaIdx = materias.findIndex(m => m.nombre === materia)
 const nextMateria = materias[materiaIdx+1]
@@ -40,20 +45,68 @@ const next = (nextMateria?.nombre && nextMateria?.link) ? {
 ---
 
 <Layout title={materia}>
-  <Title>{materia}</Title>
+  <div class='flex gap-x-4 flex-wrap'>
+    <Title className='mr-auto'>{materia}</Title>
+    <div class='flex gap-6 flex-nowrap'>
+      <a
+        href=`/editor?materiaName=${materia}`
+        title='Crear nueva nota'
+        class='size-7 min-h-7 min-w-7 sm:min-w-10 sm:min-h-10 sm:size-10 bg-secondary hover:bg-neutral-700 transition-colors rounded sm:rounded-lg flex items-center justify-center'
+      >
+        <div class='size-4 sm:size-6'>
+          <IconNote />
+        </div>
+      </a>
+      <a
+        href=`/renombrar?materiaName=${materia}`
+        title='Renombrar notas'
+        class='size-7 min-h-7 min-w-7 sm:min-w-10 sm:min-h-10 sm:size-10 bg-secondary hover:bg-neutral-700 transition-colors rounded sm:rounded-lg flex items-center justify-center'
+      >
+        <div class='size-4 sm:size-6'>
+          <IconRename />
+        </div>
+      </a>
+      <a
+        href=`/mover?materiaName=${materia}`
+        title='Mover notas'
+        class='size-7 min-h-7 min-w-7 sm:min-w-10 sm:min-h-10 sm:size-10 bg-secondary hover:bg-neutral-700 transition-colors rounded sm:rounded-lg flex items-center justify-center'
+      >
+        <div class='size-4 sm:size-6'>
+          <IconReplace />
+        </div>
+      </a>
+      <a
+        href=`/borrar?materiaName=${materia}`
+        title='Eliminar notas'
+        class='size-7 min-h-7 min-w-7 sm:min-w-10 sm:min-h-10 sm:size-10 bg-secondary hover:bg-red-600 transition-colors rounded sm:rounded-lg flex items-center justify-center'
+      >
+        <div class='size-4 sm:size-6'>
+          <IconDelete />
+        </div>
+      </a>
+    </div>
+  </div>
   <Title2 className='mt-4'>Notas</Title2>
   {
     (notas && notas?.length > 0) ? (
-      <List mark='dot'>
+      <List mark='dot' className='mb-8'>
       {
         notas.map(nota => {
+          if (!nota.id || !nota.notaName) return
+          const partsCurrentId = nota.id.toString().split('/')
+          const notaId = `${nameToLink(partsCurrentId[0])}/${nameToLink(partsCurrentId[1])}/${encodeURIComponent(nota.notaName.toString())}`
+          'informatica/programacion_full_stack/Investigaci%C3%B3n%20sobre%20el%20formato%20JSON'
+          'informatica/programacion_full_stack/Investigaci%C3%B3n%20sobre%20el%20formato%20JSON'
           return (
             <li>
               <a
-                href={`/${nota.id}`}
-                class='text-accent-secondary hover:text-accent-primary'
+                href={`/${notaId}`}
+                class='text-accent-secondary flex hover:text-accent-primary'
+                title={nota.notaName.toString()}
               >
-                {nota.notaName || `Nota sin nombre${nota?.lastModified && parseStringToDate(nota?.lastModified?.toString()) ? ` - ${parseStringToDate(nota?.lastModified.toString())}` : ''}`}
+                <span class='line-clamp-3 sm:line-clamp-2 text-xs sm:text-base'>
+                  {nota.notaName || `Nota sin nombre${nota?.lastUpdate && parseStringToDate(nota?.lastUpdate?.toString()) ? ` - ${parseStringToDate(nota?.lastUpdate.toString())}` : ''}`}
+                </span>
               </a>
             </li>
           )

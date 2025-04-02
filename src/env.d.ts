@@ -17,7 +17,7 @@ export type Nota = {
   nombre: string
   link: string
   content: Array<T>
-  lastModified?: string
+  lastUpdate?: string
 }
 
 export type MateriaConNotas = {

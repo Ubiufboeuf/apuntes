@@ -6,6 +6,6 @@ interface Props {
 const { className = '' } = Astro.props
 ---
 
-<h2 class=`text-2xl text-primary-content font-semibold mb-2 flex w-fit ${className}`>
+<h2 class=`md:text-2xl sm:text-xl text-lg text-primary-content font-semibold mb-2 flex w-fit ${className}`>
   <slot />
 </h2>

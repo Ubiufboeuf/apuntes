@@ -1,10 +1,13 @@
 ---
 interface Props {
   link: string
+  title?: string
 }
 
-const { link } = Astro.props
+const { link, title = '' } = Astro.props
 ---
-<a href={link} class='px-1.5 py-1'>
-  <slot />
+<a href={link} title={title} class='px-1.5 py-1 line-clamp-2 w-160px min-w-fit max-w-fit md:text-base sm:text-sm text-xs xs:flex xs:flex-nowrap xs:line-clamp-1 h-6 max-h-6 flex items-center justify-start'>
+  <span class='h-fit max-h-4 min-w-fit max-w-fit overflow-ellipsis [line-height:16px] overflow-hidden flex'>
+    <slot />
+  </span>
 </a>

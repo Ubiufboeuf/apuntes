@@ -1,27 +1,31 @@
 ---
 import Footer from '@/components/Footer.astro'
 import Layout from './Layout.astro'
-import React from 'react'
-import { getMateriaByPath, getMateriaByLink } from '@/lib/utils'
-import { getNotaById, getNotaContent } from '@/db/client'
+import { getMateriaByPath, getMateriaByLink, parseStringToDate, getSeccionByMateriaLink, nameToLink } from '@/lib/utils'
+import { getNotaContent, getNotaPrevNext } from '@/db/client'
 import { Editor as ClientEditor } from '@/components/Editor'
+import { descomprimirTexto } from '@/lib/zip'
 
 const path = Astro.url.pathname.split('/').slice(1)
 const title = Number(path[2]) ? 'Nota sin nombre' : decodeURIComponent(path[2])
 const materiaName = getMateriaByLink(path[1]) ?? ''
-// const nota = Number(path[2]) ? findNotaByMateriaLinkAndNotaId({ materiaLink: path[1], notaId: Number(path[2]) }) : findNotaByMateriaLinkAndNotaLink({ materiaLink: path[1], notaLink: path[2] })
-const nota = await getNotaById(Astro.url.pathname)
+const { pathname }= Astro.url
+const id = pathname.startsWith('/') ? pathname.substring(1, pathname.length) : pathname
+const notas = await getNotaPrevNext({ materiaName })
+console.log({ materiaName, notas, id })
 
-const notas = [nota]
-const noteIdx = notas?.findIndex(n => n === nota) ?? 0
+const noteIdx = notas?.findIndex(n => n?.id == id)
+const nota = notas[noteIdx || 0]
 const materia = getMateriaByPath(Astro.url.pathname)
 
-const content = await getNotaContent({ materiaName: materia.nombre || '', notaName: decodeURIComponent(path[2]) })
+console.log({nota})
+if (!nota?.id) return
+const content = await getNotaContent({ id: nota.id.toString() })
 
 const prev = (notas?.[noteIdx - 1]?.id) ? {
   id: notas?.[noteIdx - 1].id,
-  name: notas?.[noteIdx - 1].nombre,
-  link: notas?.[noteIdx - 1]?.link ?? notas?.[noteIdx - 1].id
+  name: notas?.[noteIdx - 1].notaName?.toString(),
+  link: `/${notas?.[noteIdx - 1]?.id?.toString()}`
 } : {
   name: materia.nombre,
   link: materia.link
@@ -31,28 +35,27 @@ prev.link ||= prev.id?.toString() || prev.link
 
 const next = (notas?.[noteIdx + 1]?.id) ? {
   id: notas?.[noteIdx + 1].id,
-  name: notas?.[noteIdx + 1].nombre,
-  link: notas?.[noteIdx + 1]?.link ?? notas?.[noteIdx - 1].id
+  name: notas?.[noteIdx + 1].notaName?.toString(),
+  link: `/${notas?.[noteIdx + 1]?.id?.toString()}`
 } : {
   name: materia.nombre,
   link: materia.link
 }
 next.name ||= 'Nota sin nombre'
-next.link ||= next.id?.toString() || prev.link
-console.log(content)
+next.link ||= next.id?.toString() || next.link
 ---
 
 <Layout title={title}>
   <ClientEditor
     initialContent={content}
     materiaName={materiaName}
-    notaName={nota}
+    notaName={nota?.notaName}
     client:only='react'
   />
-  <!-- <Footer
+  <Footer
     slot='footer'
-    lastUpdate={parseStringToDate(nota?.lastModified)}
+    lastUpdate={parseStringToDate(nota?.lastUpdate?.toString())}
     prev={prev}
     next={next}
-  /> -->
+  />
 </Layout>

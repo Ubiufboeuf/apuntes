@@ -5,10 +5,10 @@ import { getSeccionByMateriaLink, nameToLink } from '@/lib/utils'
 import { useEffect, useRef } from 'react'
 import { Temporal } from 'temporal-polyfill'
 
-const options = [
+export const options = [
   {
     group: 'Matemáticas',
-    opciones: ['Matemática CTS', 'Cálculo', 'Física Mecánica Cĺasica']
+    opciones: ['Matemática CTS', 'Cálculo', 'Física Mecánica Clásica']
   },
   {
     group: 'Humanidades y Ciencias Sociales',
@@ -16,15 +16,19 @@ const options = [
   },
   {
     group: 'Informática',
-    opciones: ['Programación Full Stack', 'Ingeniería de Software', 'Administración de Sistemas Operativos', 'Inteligencia Artificial']
+    opciones: ['Programación Full Stack', 'Ingeniería de Software', 'Administración Sistemas Operativos', 'Inteligencia Artificial']
   },
   {
     group: 'Proyectos y Negocios',
     opciones: ['Tutoría Proyecto UTULAB', 'Emprendurismo y Gestión']
+  },
+  {
+    group: 'Extra',
+    opciones: ['Pendiente']
   }
 ]
 
-const materias = ['Matemática CTS', 'Cálculo', 'Física Mecánica Cĺasica', 'Inglés', 'Filosofía', 'Sociología', 'Programación Full Stack', 'Ingeniería de Software', 'Administración de Sistemas Operativos', 'Inteligencia Artificial', 'Tutoría Proyecto UTULAB', 'Emprendurismo y Gestión']
+export const materias = ['Matemática CTS', 'Cálculo', 'Física Mecánica Clásica', 'Inglés', 'Filosofía', 'Sociología', 'Programación Full Stack', 'Ingeniería de Software', 'Administración Sistemas Operativos', 'Inteligencia Artificial', 'Tutoría Proyecto UTULAB', 'Emprendurismo y Gestión', 'Pendiente']
 
 export function CrearNota ({ _notaName, _materiaName }) {
   const notaNameRef = useRef()
@@ -43,9 +47,13 @@ export function CrearNota ({ _notaName, _materiaName }) {
     const materiaName = materiaSelectRef.current.selectedOptions[0].value
     const notaName = notaNameRef.current.value || _notaName
     const id = `${nameToLink(getSeccionByMateriaLink(nameToLink(materiaName)) || '')}/${nameToLink(materiaName)}/${encodeURIComponent(notaName)}`
-    const existNota = await verifyExistNota(id)
-    if (existNota) {
-      window.location.search = `materiaName=${materiaName}&notaName=${notaName}&existNota=true`
+    try {
+      const existNota = await verifyExistNota(id)
+      if (existNota) {
+        window.location.href = id
+      }
+    } catch {
+      console.error('Error al comprobar si existe la nota')
     }
   }
 
@@ -58,12 +66,18 @@ export function CrearNota ({ _notaName, _materiaName }) {
     const materiaName = materiaSelectRef.current.selectedOptions[0].value
     const notaName = notaNameRef.current.value || _notaName
     const id = `${nameToLink(getSeccionByMateriaLink(nameToLink(materiaName)) || '')}/${nameToLink(materiaName)}/${encodeURIComponent(notaName)}`
+    await checkIfNotaExist()
     if (materiaName === 'default') { 
       msgRef.current.textContent = 'Materia inválida'
       return
     }
-    await saveNewNota({ id, notaAsText, creationDate, lastUpdate, materiaName, notaName })
-    
+    if (notaName === '') {
+      msgRef.current.textContent = 'Falta el nombre de la nota'
+      return 
+    }
+    saveNewNota({ id, notaAsText, creationDate, lastUpdate, materiaName, notaName }).then(() => {
+      window.location.pathname = id
+    })
   }
 
   return (
@@ -71,7 +85,7 @@ export function CrearNota ({ _notaName, _materiaName }) {
       <input
         id='input_nota_name'
         ref={notaNameRef}
-        placeholder={`Nota por defecto: ${_notaName}`}
+        placeholder={`Nombre de la nota, por defecto: ${_notaName || 'nada'}`}
         className='h-14 mb-2 text-xl px-7 font-bold focus:outline-0 focus:border-accent-primary border border-transparent transition-colors [&:hover:not(&:focus)]:bg-secondary rounded-xl'
       />
       <select
@@ -81,17 +95,17 @@ export function CrearNota ({ _notaName, _materiaName }) {
       >
         <option value='default' disabled>Selecciona una materia</option>
         {
-          options.map(option => (
-            <optgroup key={crypto.randomUUID()} label={option.group}>
+          options.map((option, idx) => (
+            <optgroup key={`crearnota-${option.group}-${idx}-group`} label={option.group}>
               {
-                option.opciones.map(op => <option key={crypto.randomUUID()} value={op}>{op}</option>)
+                option.opciones.map((op, i) => <option key={`crearnota-${op}-${i}-${idx}-${option.group}-group`} value={op}>{op}</option>)
               }
             </optgroup>
           ))
         }
       </select>
       <button
-        className='w-fit px-8 mb-6 hover:bg-secondary active:bg-primary h-10 rounded-xl cursor-pointer focus:outline-0 focus:border-accent-primary border border-transparent transition-colors'
+        className='w-fit px-7 mx-1 mb-6 hover:bg-secondary active:bg-primary h-10 rounded-xl cursor-pointer focus:outline-0 focus:border-accent-primary border border-transparent transition-colors'
         onClick={crearNota}
       >
         Crear nota

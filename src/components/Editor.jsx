@@ -1,11 +1,12 @@
-import { client } from '@/db/client'
+import { saveNewNota, saveNotaContent } from '@/db/client'
 import { getSeccionByMateriaLink, nameToLink } from '@/lib/utils'
-import { compareNotasFromDB } from '@/mocks/notas'
+import { compareNotasFromDB } from '@/db/client'
 import '@blocknote/core/fonts/inter.css'
 import { BlockNoteView } from '@blocknote/mantine'
 import '@blocknote/mantine/style.css'
 import { useCreateBlockNote } from '@blocknote/react'
 import { Temporal } from 'temporal-polyfill'
+import { comprimirTexto } from '@/lib/zip'
 
 async function uploadFile(file) {
   const body = new FormData()
@@ -31,21 +32,11 @@ export function Editor({ initialContent, materiaName, notaName }) {
 
     const dbHasNota = await compareNotasFromDB({ materiaName, notaFullLink: id })
 
+    const contenidoComprimido = comprimirTexto(notaAsText)
     if (dbHasNota) {
-      await client.execute({
-        sql: `
-          UPDATE notas
-          SET notaAsText = ?,
-              lastUpdate = ?
-          WHERE id = ?
-        `,
-        args: [notaAsText, lastUpdate, id]
-      })
+      await saveNotaContent({ id, lastUpdate, notaAsText, notaBlob: contenidoComprimido })
     } else {
-      await client.execute({
-        sql: 'INSERT INTO notas(id, notaAsText, creationDate, lastUpdate, materiaName, notaName) VALUES(?, ?, ?, ?, ?, ?)',
-        args: [id, notaAsText, creationDate, lastUpdate, materiaName, notaName]
-      })
+      await saveNewNota({ creationDate, id, lastUpdate, materiaName, notaAsText, notaName, notaAsBlob: contenidoComprimido })
     }
   }
 

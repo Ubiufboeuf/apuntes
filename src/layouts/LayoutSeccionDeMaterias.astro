@@ -43,7 +43,7 @@ const next = (nextSeccion?.nombre && nextSeccion?.link) ? {
       seccion?.materias.map(materia => (
         <li>
           <a
-            href={`/${path[0]}/${materia.link}`}
+            href={materia.link === 'horarios' ? 'https://horarios-public.pages.dev' : `/${path[0]}/${materia.link}`}
             class='text-accent-secondary hover:text-accent-primary'
           >
             {materia.nombre}

@@ -1,0 +1,30 @@
+---
+import Title from '@/components/editor/Title.astro'
+import Title2 from '@/components/editor/Title2.astro'
+import { getNotasFromDBByMateriaName } from '@/db/client'
+import Layout from '@/layouts/Layout.astro'
+import { BorrarNotas } from '@/components/BorrarNotas'
+import Link from '@/components/Link.astro'
+import { getSeccionByMateriaLink, nameToLink } from '@/lib/utils'
+
+export const prerender = false
+const { url } = Astro
+
+const materiaName = url.searchParams.get('materiaName')
+const notas = await getNotasFromDBByMateriaName(materiaName || '')
+
+Astro.url.searchParams.set('title', `Borrar notas de ${materiaName}`)
+
+const materiaLink = nameToLink(materiaName ?? '')
+const seccionLink = getSeccionByMateriaLink(materiaLink ?? '')
+
+if (!materiaName) return Astro.redirect(`/400?url=${encodeURIComponent(url)}&msg=Falta el nombre de la materia`)
+---
+
+<Layout title={`Borrar notas - ${materiaName}`}>
+  <Link href=`/${seccionLink}/${materiaLink}`>
+    <Title className='hover:text-accent-primary transition-colors'>Volver a {materiaName}</Title>
+  </Link>
+  <Title2 className='mt-4'>Notas</Title2>
+  <BorrarNotas notas={notas} client:load />
+</Layout>

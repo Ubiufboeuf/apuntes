@@ -1,8 +1,9 @@
 ---
 import Layout from '@/layouts/Layout.astro'
 import { Editor as ClientEditor } from '@/components/Editor'
-import { getNotaContent } from '@/db/client'
+import { getNotaContent, verifyExistNota, verifyExistNotaStrictless } from '@/db/client'
 import { CrearNota } from '@/components/CrearNota'
+import { getSeccionByMateriaLink, nameToLink } from '@/lib/utils'
 
 export const prerender = false
 
@@ -12,16 +13,26 @@ const notaName = url.searchParams.get('notaName') ?? ''
 
 if (url.pathname === '/favicon.ico') return 
 
-const initialContent = await getNotaContent({ notaName, materiaName })
-const existNota = url.searchParams.get('existNota')
+const id = `${nameToLink(getSeccionByMateriaLink(nameToLink(materiaName ?? '')) ?? '')}/${nameToLink(materiaName)}/${encodeURIComponent(notaName)}`
+const initialContent = await getNotaContent({ id })
 
 Astro.url.searchParams.set('title', `Crea una nueva nota para ${materiaName}`)
-if (initialContent > 0 || existNota) Astro.url.searchParams.delete('title')
+Astro.url.searchParams.set('materiaName', materiaName)
+const dbHasNota = await verifyExistNotaStrictless({ materiaName, notaName })
+if (notaName && dbHasNota) return Astro.redirect(fullPath)
+// if (initialContent > 0 || existNota) Astro.url.searchParams.delete('title')
+let title = 'Editor'
+if (initialContent?.length === 0 || !materiaName || !notaName) {
+  title = materiaName ? `Nueva nota - ${materiaName}` : 'Nueva nota'
+}
 ---
 
-<Layout title={(initialContent.length === 0 || !materiaName || !notaName) ? `Nueva nota - ${materiaName}` : 'Editor'} className='min-h-fit pb-32'>
+<Layout
+  title={title}
+  className='min-h-fit pb-32'
+>
   {
-    (initialContent.length === 0 || !materiaName || !notaName) ? (
+    (initialContent?.length === 0 || !materiaName || !notaName) ? (
       <CrearNota _materiaName={materiaName ?? ''} _notaName={notaName ?? ''} client:load />
     ) : (
       <ClientEditor
